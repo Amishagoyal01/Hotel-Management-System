@@ -1,8 +1,11 @@
 import random
 
 # Dictionaries to store data
-existing_customers = {101: {"Name": "Anshuman", "Phone Number": 991489461, "Bill": 0, "Bookings": {}}}
+existing_customers = {
+    101: {"Name": "Anshuman", "Phone Number": 991489461, "Bill": 0, "Bookings": {}}
+}
 X = {}  # Food orders will be stored here
+
 
 # Start the program
 def HMS():
@@ -36,6 +39,7 @@ def HMS():
         print("Invalid choice")
         HMS()
 
+
 # Existing user
 def existing_user():
     b = int(input("Enter your Booking ID: "))
@@ -46,14 +50,21 @@ def existing_user():
         print("Booking ID not found.")
         existing_user()
 
+
 # New user
 def new_user():
     name = input("Enter your name: ")
     phone = int(input("Enter your phone number: "))
     Booking_id = random.randint(100, 500)
-    existing_customers[Booking_id] = {"Name": name, "Phone Number": phone, "Bill": 0, "Bookings": {}}
+    existing_customers[Booking_id] = {
+        "Name": name,
+        "Phone Number": phone,
+        "Bill": 0,
+        "Bookings": {}
+    }
     print(f"Booking created successfully! Your Booking ID: {Booking_id}")
     bookings(Booking_id)
+
 
 # Booking choices
 def bookings(Booking_id):
@@ -72,33 +83,43 @@ def bookings(Booking_id):
         print("Invalid choice")
         bookings(Booking_id)
 
+
 # Room Booking
 def room_booking(Booking_id):
     print("\n--- Room Types ---")
-    print("1. Single Seater: 1200")
-    print("2. Double Seater: 2000")
-    print("3. Mini Suite: 3500")
-    print("4. Suite: 5000")
+    print("1. Single Seater: 1200 per day")
+    print("2. Double Seater: 2000 per day")
+    print("3. Mini Suite: 3500 per day")
+    print("4. Suite: 5000 per day")
     choice = int(input("Enter room choice: "))
     prices = {1: 1200, 2: 2000, 3: 3500, 4: 5000}
     if choice in prices:
         check_in = input("Enter check-in date (dd/mm/yyyy): ")
         check_out = input("Enter check-out date (dd/mm/yyyy): ")
+        days = int(input("Enter number of days for stay: "))
+
         num_persons = 1
-        if choice >= 2:
+        if choice >= 3:
             num_persons = int(input("Enter number of persons staying: "))
-        existing_customers[Booking_id]["Bill"] += prices[choice]
+
+        stay_cost = prices[choice] * days
+        existing_customers[Booking_id]["Bill"] += stay_cost
         existing_customers[Booking_id]["Bookings"]["Room"] = {
             "Type": choice,
             "Check-in": check_in,
             "Check-out": check_out,
-            "Persons": num_persons
+            "Days": days,
+            "Persons": num_persons,
+            "Room Cost": stay_cost
         }
-        print("Room booked successfully! Booking bill:", existing_customers[Booking_id]["Bill"])
+        print(f"Room booked successfully from {check_in} to {check_out} "
+              f"for {days} days! Room bill: {stay_cost}")
+        print("Current total bill:", existing_customers[Booking_id]["Bill"])
         ask_food_order(Booking_id)
     else:
         print("Invalid choice")
         room_booking(Booking_id)
+
 
 # Hall Booking
 def hall_booking(Booking_id):
@@ -117,11 +138,13 @@ def hall_booking(Booking_id):
             "Timings": timings,
             "Persons": num_persons
         }
-        print("Hall booked successfully! Booking bill:", existing_customers[Booking_id]["Bill"])
+        print("Hall booked successfully! Booking bill:",
+              existing_customers[Booking_id]["Bill"])
         ask_food_order(Booking_id)
     else:
         print("Hall can accommodate 80 to 120 people only.")
         hall_booking(Booking_id)
+
 
 # Table Booking
 def table_booking(Booking_id):
@@ -142,11 +165,13 @@ def table_booking(Booking_id):
             "Timing": timing,
             "Type": choice
         }
-        print("Table booked successfully! Booking bill:", existing_customers[Booking_id]["Bill"])
+        print("Table booked successfully! Booking bill:",
+              existing_customers[Booking_id]["Bill"])
         ask_food_order(Booking_id)
     else:
         print("Invalid choice")
         table_booking(Booking_id)
+
 
 # Ask for food order
 def ask_food_order(Booking_id):
@@ -158,10 +183,10 @@ def ask_food_order(Booking_id):
         new_food_order(Booking_id)
     elif choice == 2:
         print("Thanks! Your total bill is:", existing_customers[Booking_id]["Bill"])
-        HMS()
     else:
         print("Invalid choice")
         ask_food_order(Booking_id)
+
 
 # Food ordering for booking
 def new_food_order(Booking_id):
@@ -173,6 +198,7 @@ def new_food_order(Booking_id):
     }
     menu(order_id, Booking_id)
 
+
 # Food menu
 def menu(order_id, Booking_id):
     print("\n--- Food Menu ---")
@@ -180,7 +206,6 @@ def menu(order_id, Booking_id):
     print("2. Non-Veg")
     print("3. Drinks")
     print("4. Desserts")
-    print("5. Exit")
     choice = int(input("Enter your choice: "))
     if choice == 1:
         veg_menu(order_id, Booking_id)
@@ -190,12 +215,10 @@ def menu(order_id, Booking_id):
         drinks(order_id, Booking_id)
     elif choice == 4:
         desserts(order_id, Booking_id)
-    elif choice == 5:
-        total_bill(order_id, Booking_id)
-        HMS()
     else:
         print("Invalid choice")
         menu(order_id, Booking_id)
+
 
 def veg_menu(order_id, Booking_id):
     print("1. Dal Makhani: 300")
@@ -204,10 +227,11 @@ def veg_menu(order_id, Booking_id):
     prices = {1: 300, 2: 500}
     if choice in prices:
         X[order_id]["Bill"] += prices[choice]
-        menu(order_id, Booking_id)
+        continue_food_order(order_id, Booking_id)
     else:
         print("Invalid choice")
         veg_menu(order_id, Booking_id)
+
 
 def non_veg_menu(order_id, Booking_id):
     print("1. Chicken Curry: 350")
@@ -216,10 +240,11 @@ def non_veg_menu(order_id, Booking_id):
     prices = {1: 350, 2: 400}
     if choice in prices:
         X[order_id]["Bill"] += prices[choice]
-        menu(order_id, Booking_id)
+        continue_food_order(order_id, Booking_id)
     else:
         print("Invalid choice")
         non_veg_menu(order_id, Booking_id)
+
 
 def drinks(order_id, Booking_id):
     print("1. Coke: 50")
@@ -228,10 +253,11 @@ def drinks(order_id, Booking_id):
     prices = {1: 50, 2: 120}
     if choice in prices:
         X[order_id]["Bill"] += prices[choice]
-        menu(order_id, Booking_id)
+        continue_food_order(order_id, Booking_id)
     else:
         print("Invalid choice")
         drinks(order_id, Booking_id)
+
 
 def desserts(order_id, Booking_id):
     print("1. Ice Cream: 80")
@@ -240,17 +266,29 @@ def desserts(order_id, Booking_id):
     prices = {1: 80, 2: 100}
     if choice in prices:
         X[order_id]["Bill"] += prices[choice]
-        menu(order_id, Booking_id)
+        continue_food_order(order_id, Booking_id)
     else:
         print("Invalid choice")
         desserts(order_id, Booking_id)
 
-def total_bill(order_id, Booking_id):
-    if Booking_id is not None:  # Booking + food
-        total = existing_customers[Booking_id]["Bill"] + X[order_id]["Bill"]
-    else:  # only food customer
-        total = X[order_id]["Bill"]
-    print("Your total bill is:", total)
+
+def continue_food_order(order_id, Booking_id):
+    print("\n1. Exit")
+    print("2. Continue Ordering")
+    choice = int(input("Enter your choice: "))
+    if choice == 1:
+        if Booking_id is not None:
+            total_bill = existing_customers[Booking_id]["Bill"] + X[order_id]["Bill"]
+        else:
+            total_bill = X[order_id]["Bill"]
+        print("Your total bill is:", total_bill)
+        HMS()
+    elif choice == 2:
+        menu(order_id, Booking_id)
+    else:
+        print("Invalid choice")
+        continue_food_order(order_id, Booking_id)
+
 
 # Existing food customer
 def old_customers():
@@ -262,6 +300,7 @@ def old_customers():
         print("Order ID not found.")
         old_customers()
 
+
 # New food customer
 def new_customers():
     name = input("Enter your name: ")
@@ -269,7 +308,9 @@ def new_customers():
     order_id = random.randint(100, 500)
     X[order_id] = {"Name": name, "Phone Number": phone, "Bill": 0}
     print(f"Your Order ID is: {order_id}")
+   
     menu(order_id, None)
+
 
 # Start the system
 HMS()
